@@ -54,4 +54,4 @@ jobs:
           app-name: 'EntityframeworkDemo'
           slot-name: 'Production'
           package: .
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_29B93F0CF5BF4733841D615A10AE2491 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_A989EC5D02494B2093F71FA78547B62C }}
