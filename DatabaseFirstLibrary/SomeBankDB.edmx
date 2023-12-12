@@ -1,0 +1,315 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="SomeBankModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <!--Errors Found During Generation:
+warning 6013: The table/view 'SomeBank.dbo.custAccount' does not have a primary key defined and no valid primary key could be inferred. This table/view has been excluded. To use the entity, you will need to review your schema, add the correct keys, and uncomment it.
+        <EntityType Name="custAccount">
+          <Property Name="Custid" Type="int" />
+          <Property Name="amt" Type="numeric" Precision="12" Scale="0" />
+        </EntityType>-->
+        <!--Errors Found During Generation:
+warning 6013: The table/view 'SomeBank.dbo.CustLogin' does not have a primary key defined and no valid primary key could be inferred. This table/view has been excluded. To use the entity, you will need to review your schema, add the correct keys, and uncomment it.
+        <EntityType Name="CustLogin">
+          <Property Name="Custid" Type="int" />
+          <Property Name="password" Type="varchar" MaxLength="50" />
+        </EntityType>-->
+        <EntityType Name="Customer">
+          <Key>
+            <PropertyRef Name="Custid" />
+          </Key>
+          <Property Name="Custid" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Custname" Type="varchar" MaxLength="50" />
+          <Property Name="City" Type="varchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="CustTransactions">
+          <Key>
+            <PropertyRef Name="Tranid" />
+          </Key>
+          <Property Name="Tranid" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Custid" Type="int" />
+          <Property Name="tranDate" Type="date" />
+          <Property Name="Amt" Type="numeric" Precision="12" Scale="0" />
+        </EntityType>
+        <EntityType Name="TransferMoney">
+          <Key>
+            <PropertyRef Name="tranid" />
+          </Key>
+          <Property Name="tranid" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="tranDate" Type="date" />
+          <Property Name="custidFrom" Type="int" />
+          <Property Name="custidTo" Type="int" />
+          <Property Name="Amt" Type="numeric" Precision="18" Scale="0" />
+        </EntityType>
+        <!--Errors Found During Generation:
+error 6004: The table 'SomeBank.dbo.custAccount' is referenced by a relationship, but cannot be found.
+        <Association Name="FK__custAccou__Custi__4CA06362" />-->
+        <!--Errors Found During Generation:
+error 6004: The table 'SomeBank.dbo.CustLogin' is referenced by a relationship, but cannot be found.
+        <Association Name="FK__CustLogin__Custi__02084FDA" />-->
+        <Association Name="FK__CustTrans__Custi__4F7CD00D">
+          <End Role="Customer" Type="Self.Customer" Multiplicity="0..1" />
+          <End Role="CustTransactions" Type="Self.CustTransactions" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Customer">
+              <PropertyRef Name="Custid" />
+            </Principal>
+            <Dependent Role="CustTransactions">
+              <PropertyRef Name="Custid" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__TransferM__custi__5EBF139D">
+          <End Role="Customer" Type="Self.Customer" Multiplicity="0..1" />
+          <End Role="TransferMoney" Type="Self.TransferMoney" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Customer">
+              <PropertyRef Name="Custid" />
+            </Principal>
+            <Dependent Role="TransferMoney">
+              <PropertyRef Name="custidFrom" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__TransferM__custi__5FB337D6">
+          <End Role="Customer" Type="Self.Customer" Multiplicity="0..1" />
+          <End Role="TransferMoney" Type="Self.TransferMoney" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Customer">
+              <PropertyRef Name="Custid" />
+            </Principal>
+            <Dependent Role="TransferMoney">
+              <PropertyRef Name="custidTo" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Function Name="fn_ShowBalance" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="true" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" ReturnType="numeric">
+          <Parameter Name="p_custid" Type="int" Mode="In" />
+        </Function>
+        <Function Name="fn_ShowTransactionHistory" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="true" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="p_custid" Type="int" Mode="In" />
+          <ReturnType>
+            <CollectionType>
+              <RowType>
+                <Property Name="Tranid" Type="int" Nullable="false" />
+                <Property Name="Custid" Type="int" />
+                <Property Name="tranDate" Type="date" />
+                <Property Name="Amt" Type="numeric" Precision="12" Scale="0" />
+              </RowType>
+            </CollectionType>
+          </ReturnType>
+        </Function>
+        <Function Name="sp_TransferMoney" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="p_custidFrom" Type="int" Mode="In" />
+          <Parameter Name="p_custidTo" Type="int" Mode="In" />
+          <Parameter Name="p_amt" Type="numeric" Mode="In" />
+        </Function>
+        <Function Name="ValidateUser" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="p_username" Type="varchar" Mode="In" />
+          <Parameter Name="p_pwd" Type="varchar" Mode="In" />
+          <Parameter Name="p_userStatus" Type="varchar" Mode="InOut" />
+          <Parameter Name="p_custname" Type="varchar" Mode="InOut" />
+        </Function>
+        <EntityContainer Name="SomeBankModelStoreContainer">
+          <EntitySet Name="Customer" EntityType="Self.Customer" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="CustTransactions" EntityType="Self.CustTransactions" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="TransferMoney" EntityType="Self.TransferMoney" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK__CustTrans__Custi__4F7CD00D" Association="Self.FK__CustTrans__Custi__4F7CD00D">
+            <End Role="Customer" EntitySet="Customer" />
+            <End Role="CustTransactions" EntitySet="CustTransactions" />
+          </AssociationSet>
+          <AssociationSet Name="FK__TransferM__custi__5EBF139D" Association="Self.FK__TransferM__custi__5EBF139D">
+            <End Role="Customer" EntitySet="Customer" />
+            <End Role="TransferMoney" EntitySet="TransferMoney" />
+          </AssociationSet>
+          <AssociationSet Name="FK__TransferM__custi__5FB337D6" Association="Self.FK__TransferM__custi__5FB337D6">
+            <End Role="Customer" EntitySet="Customer" />
+            <End Role="TransferMoney" EntitySet="TransferMoney" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="SomeBankModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <ComplexType Name="fn_ShowTransactionHistory_Result">
+          <Property Name="Tranid" Type="Int32" Nullable="false" />
+          <Property Name="Custid" Type="Int32" />
+          <Property Name="tranDate" Type="DateTime" />
+          <Property Name="Amt" Type="Decimal" Precision="12" Scale="0" />
+        </ComplexType>
+        <EntityType Name="Customer">
+          <Key>
+            <PropertyRef Name="Custid" />
+          </Key>
+          <Property Name="Custid" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Custname" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="City" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="CustTransactions" Relationship="Self.FK__CustTrans__Custi__4F7CD00D" FromRole="Customer" ToRole="CustTransactions" />
+          <NavigationProperty Name="TransferMoneys" Relationship="Self.FK__TransferM__custi__5EBF139D" FromRole="Customer" ToRole="TransferMoney" />
+          <NavigationProperty Name="TransferMoneys1" Relationship="Self.FK__TransferM__custi__5FB337D6" FromRole="Customer" ToRole="TransferMoney" />
+        </EntityType>
+        <EntityType Name="CustTransaction">
+          <Key>
+            <PropertyRef Name="Tranid" />
+          </Key>
+          <Property Name="Tranid" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Custid" Type="Int32" />
+          <Property Name="tranDate" Type="DateTime" Precision="0" />
+          <Property Name="Amt" Type="Decimal" Precision="12" Scale="0" />
+          <NavigationProperty Name="Customer" Relationship="Self.FK__CustTrans__Custi__4F7CD00D" FromRole="CustTransactions" ToRole="Customer" />
+        </EntityType>
+        <EntityType Name="TransferMoney">
+          <Key>
+            <PropertyRef Name="tranid" />
+          </Key>
+          <Property Name="tranid" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="tranDate" Type="DateTime" Precision="0" />
+          <Property Name="custidFrom" Type="Int32" />
+          <Property Name="custidTo" Type="Int32" />
+          <Property Name="Amt" Type="Decimal" Precision="18" Scale="0" />
+          <NavigationProperty Name="Customer" Relationship="Self.FK__TransferM__custi__5EBF139D" FromRole="TransferMoney" ToRole="Customer" />
+          <NavigationProperty Name="Customer1" Relationship="Self.FK__TransferM__custi__5FB337D6" FromRole="TransferMoney" ToRole="Customer" />
+        </EntityType>
+        <Association Name="FK__CustTrans__Custi__4F7CD00D">
+          <End Role="Customer" Type="Self.Customer" Multiplicity="0..1" />
+          <End Role="CustTransactions" Type="Self.CustTransaction" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Customer">
+              <PropertyRef Name="Custid" />
+            </Principal>
+            <Dependent Role="CustTransactions">
+              <PropertyRef Name="Custid" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__TransferM__custi__5EBF139D">
+          <End Role="Customer" Type="Self.Customer" Multiplicity="0..1" />
+          <End Role="TransferMoney" Type="Self.TransferMoney" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Customer">
+              <PropertyRef Name="Custid" />
+            </Principal>
+            <Dependent Role="TransferMoney">
+              <PropertyRef Name="custidFrom" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__TransferM__custi__5FB337D6">
+          <End Role="Customer" Type="Self.Customer" Multiplicity="0..1" />
+          <End Role="TransferMoney" Type="Self.TransferMoney" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Customer">
+              <PropertyRef Name="Custid" />
+            </Principal>
+            <Dependent Role="TransferMoney">
+              <PropertyRef Name="custidTo" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="SomeBankEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Customers" EntityType="Self.Customer" />
+          <EntitySet Name="CustTransactions" EntityType="Self.CustTransaction" />
+          <EntitySet Name="TransferMoneys" EntityType="Self.TransferMoney" />
+          <AssociationSet Name="FK__CustTrans__Custi__4F7CD00D" Association="Self.FK__CustTrans__Custi__4F7CD00D">
+            <End Role="Customer" EntitySet="Customers" />
+            <End Role="CustTransactions" EntitySet="CustTransactions" />
+          </AssociationSet>
+          <AssociationSet Name="FK__TransferM__custi__5EBF139D" Association="Self.FK__TransferM__custi__5EBF139D">
+            <End Role="Customer" EntitySet="Customers" />
+            <End Role="TransferMoney" EntitySet="TransferMoneys" />
+          </AssociationSet>
+          <AssociationSet Name="FK__TransferM__custi__5FB337D6" Association="Self.FK__TransferM__custi__5FB337D6">
+            <End Role="Customer" EntitySet="Customers" />
+            <End Role="TransferMoney" EntitySet="TransferMoneys" />
+          </AssociationSet>
+          <FunctionImport Name="fn_ShowTransactionHistory" IsComposable="true" ReturnType="Collection(SomeBankModel.fn_ShowTransactionHistory_Result)">
+            <Parameter Name="p_custid" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="sp_TransferMoney">
+            <Parameter Name="p_custidFrom" Mode="In" Type="Int32" />
+            <Parameter Name="p_custidTo" Mode="In" Type="Int32" />
+            <Parameter Name="p_amt" Mode="In" Type="Decimal" />
+          </FunctionImport>
+          <FunctionImport Name="ValidateUser">
+            <Parameter Name="p_username" Mode="In" Type="String" />
+            <Parameter Name="p_pwd" Mode="In" Type="String" />
+            <Parameter Name="p_userStatus" Mode="InOut" Type="String" />
+            <Parameter Name="p_custname" Mode="InOut" Type="String" />
+          </FunctionImport>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="SomeBankModelStoreContainer" CdmEntityContainer="SomeBankEntities">
+          <EntitySetMapping Name="Customers">
+            <EntityTypeMapping TypeName="SomeBankModel.Customer">
+              <MappingFragment StoreEntitySet="Customer">
+                <ScalarProperty Name="Custid" ColumnName="Custid" />
+                <ScalarProperty Name="Custname" ColumnName="Custname" />
+                <ScalarProperty Name="City" ColumnName="City" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CustTransactions">
+            <EntityTypeMapping TypeName="SomeBankModel.CustTransaction">
+              <MappingFragment StoreEntitySet="CustTransactions">
+                <ScalarProperty Name="Tranid" ColumnName="Tranid" />
+                <ScalarProperty Name="Custid" ColumnName="Custid" />
+                <ScalarProperty Name="tranDate" ColumnName="tranDate" />
+                <ScalarProperty Name="Amt" ColumnName="Amt" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TransferMoneys">
+            <EntityTypeMapping TypeName="SomeBankModel.TransferMoney">
+              <MappingFragment StoreEntitySet="TransferMoney">
+                <ScalarProperty Name="tranid" ColumnName="tranid" />
+                <ScalarProperty Name="tranDate" ColumnName="tranDate" />
+                <ScalarProperty Name="custidFrom" ColumnName="custidFrom" />
+                <ScalarProperty Name="custidTo" ColumnName="custidTo" />
+                <ScalarProperty Name="Amt" ColumnName="Amt" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionName="SomeBankModel.Store.fn_ShowTransactionHistory" FunctionImportName="fn_ShowTransactionHistory">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="SomeBankModel.fn_ShowTransactionHistory_Result">
+                <ScalarProperty Name="Tranid" ColumnName="Tranid" />
+                <ScalarProperty Name="Custid" ColumnName="Custid" />
+                <ScalarProperty Name="tranDate" ColumnName="tranDate" />
+                <ScalarProperty Name="Amt" ColumnName="Amt" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="sp_TransferMoney" FunctionName="SomeBankModel.Store.sp_TransferMoney" />
+          <FunctionImportMapping FunctionImportName="ValidateUser" FunctionName="SomeBankModel.Store.ValidateUser" />
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

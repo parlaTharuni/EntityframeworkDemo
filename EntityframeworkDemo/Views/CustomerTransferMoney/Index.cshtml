@@ -1,0 +1,45 @@
+﻿@model IEnumerable<EntityframeworkDemo.Models.TransactionDetails>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.tranid)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.trandate)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.amt)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.tranid)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.trandate)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.amt)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
+            @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
+            @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+        </td>
+    </tr>
+}
+
+</table>
